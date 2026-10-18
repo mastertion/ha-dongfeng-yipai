@@ -24,6 +24,27 @@
 
 ## 安装
 
+### 方式零：configuration.yaml 直接配置（v0.4.0+，无需在界面里添加）
+
+HACS 装好文件并重启一次后，在 HA 配置目录的 `configuration.yaml` 末尾追加：
+
+```yaml
+# 演示模式（内置模拟数据，零凭证预览全部实体和页面）
+dongfeng_yipai:
+  use_demo: true
+
+# —— 或 —— 真实车辆（token 从官方 App 抓包获取）
+# dongfeng_yipai:
+#   - vin: "你的VIN"
+#     token: "eyJhbGciOi..."
+#     host: https://dfypappgw-pros.dfiov.com.cn
+#     scan_interval: 60
+#     enable_charge_control: true
+```
+
+保存后 设置 → 系统 → 重启。HA 启动时会自动创建集成实例（等价于界面"添加集成"），
+无需在"添加集成"里搜索。VIN 留空或没填 token 时自动落为演示模式，不会导致启动报错。
+
 ### 方式一：HACS 自定义仓库（推荐）
 
 1. HA → 设置 → 套件与服务（Stores）→ HACS → 右上角 ⋮ → **Custom repositories**。
