@@ -2,7 +2,12 @@
 from __future__ import annotations
 
 from homeassistant.components.device_tracker import SourceType
-from homeassistant.components.device_tracker.config_entry import ScannerEntity
+
+try:  # HA 2025.x moved ScannerEntity to the package root
+    from homeassistant.components.device_tracker import ScannerEntity
+except ImportError:  # pragma: no cover - older HA
+    from homeassistant.components.device_tracker.config_entry import ScannerEntity
+
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
@@ -23,6 +28,9 @@ async def async_setup_entry(
 class DfpVehicleLocation(DfpEntity, ScannerEntity):
     _attr_translation_key = "location"
     _attr_icon = "mdi:crosshairs-gps"
+
+    def __init__(self, coord, vin) -> None:
+        super().__init__(coord, vin, "location")
 
     @property
     def source_type(self) -> SourceType:

@@ -75,6 +75,25 @@ class YipaiDashboard extends HTMLElement {
       .yp-row{margin:6px 0;display:flex;justify-content:space-between;font-size:14px;}
       .yp a{color:#0a84ff;text-decoration:none;}
       .yp-empty{opacity:.6;font-size:14px;padding:20px;}
+      /* 小米汽车风格 hero 环 */
+      .yp-hero{display:flex;gap:18px;align-items:center;flex-wrap:wrap;
+          background:linear-gradient(150deg,#14352f 0%,#101a1c 70%);
+          border-radius:20px;color:#eafffa;grid-column:1/-1;}
+      .yp-hero .ring{position:relative;width:130px;height:130px;flex:0 0 auto;}
+      .yp-hero svg{transform:rotate(-90deg);}
+      .yp-hero .pct{position:absolute;inset:0;display:flex;flex-direction:column;
+          justify-content:center;align-items:center;}
+      .yp-hero .pct b{font-size:32px;font-weight:700;}
+      .yp-hero .pct s{font-size:11px;opacity:.6;text-decoration:none;}
+      .yp-hero .info{flex:1;min-width:170px;}
+      .yp-hero .row b{font-size:15px;}
+      .yp-hero .chip{background:rgba(255,255,255,.09);}
+      .yp-hero .chip i{width:8px;height:8px;border-radius:50%;background:#7f8b8e;
+          display:inline-block;margin-right:5px;}
+      .yp-hero .chip.on i{background:#00e5b0;box-shadow:0 0 6px #00e5b0;}
+      .yp-hero .chip.warn i{background:#ffb45a;}
+      .yp-hero .upd{font-size:11px;opacity:.45;margin-top:8px;}
+      @media(max-width:520px){.yp-hero{flex-direction:column;align-items:stretch}}
       @media(max-width:600px){.yp-big{grid-column:span 1;}}`;
     return s;
   }
@@ -92,24 +111,43 @@ class YipaiDashboard extends HTMLElement {
           trackers=g('device_tracker.');
     const fmt=v=>v==null?'--':v;
     const soc=sensors.find(s=>/powerSocStatus|battery/i.test(s.entity_id));
+    const rest=sensors.filter(s=>s!==soc&&!/last_report|updateTime/i.test(s.entity_id));
     let html='<div class="yp">';
+    // ---- Xiaomi-style hero: battery ring + key numbers + chips ----
     if(soc){
       const p=Math.max(0,Math.min(100,Number(soc.state)||0));
-      html+=`<div class="yp-card yp-big"><div class="yp-title">${soc.attributes.friendly_name||'动力电池'}</div>
-        <div class="yp-val">${p}<span class="yp-unit">%</span></div>
-        <div class="yp-bar"><i style="width:${p}%"></i></div></div>`;
+      const col=p>50?'#00e5b0':p>20?'#ffd166':'#ff6b6b';
+      const C=2*Math.PI*54;
+      const range=sensors.find(s=>/endurance/i.test(s.entity_id));
+      const total=sensors.find(s=>/totalmileage/i.test(s.entity_id));
+      const cabin=sensors.find(s=>/acCabin/i.test(s.entity_id));
+      const outt=sensors.find(s=>/outTemperature/i.test(s.entity_id));
+      html+=`<div class="yp-card yp-hero">
+        <div class="ring"><svg width="130" height="130" viewBox="0 0 130 130">
+          <circle cx="65" cy="65" r="54" fill="none" stroke="rgba(255,255,255,.10)" stroke-width="10"/>
+          <circle cx="65" cy="65" r="54" fill="none" stroke="${col}" stroke-width="10"
+            stroke-linecap="round" stroke-dasharray="${C*p/100} ${C}"/>
+        </svg><div class="pct"><b>${p}%</b><s>动力电池</s></div></div>
+        <div class="info">
+          <div class="yp-row"><span>剩余续航</span><b>${fmt(range?range.state:null)}${range?' '+(range.attributes.unit_of_measurement||'km'):''}</b></div>
+          <div class="yp-row"><span>总里程</span><b>${fmt(total?total.state:null)}</b></div>
+          <div class="yp-row"><span>车内 / 车外</span><b>${fmt(cabin?cabin.state:null)}℃ / ${fmt(outt?outt.state:null)}℃</b></div>
+          <div class="yp-grid">`;
+      bins.forEach(b=>{
+        const nm=(b.attributes.friendly_name||b.entity_id.split('.').pop());
+        const good=b.state==='on';
+        html+=`<span class="yp-chip chip ${good?'on':'warn'}"><i></i>${nm}</span>`;
+      });
+      html+='</div></div></div>';
     }
-    sensors.filter(s=>s!==soc).forEach(s=>{
+    rest.forEach(s=>{
       html+=`<div class="yp-card"><div class="yp-title">${s.attributes.friendly_name||s.entity_id}</div>
         <div class="yp-val">${fmt(s.state)}<span class="yp-unit">${s.attributes.unit_of_measurement||''}</span></div></div>`;
     });
-    if(bins.length){
-      html+='<div class="yp-card yp-big"><div class="yp-title">车辆状态</div><div class="yp-grid">';
-      bins.forEach(b=>{
-        const cls=b.state==='on'?'on':'warn';
-        html+=`<span class="yp-chip ${cls}">${b.attributes.friendly_name||b.entity_id} ${b.state==='on'?'●':'○'}</span>`;
-      });
-      html+='</div></div>';
+    const upd=sensors.find(s=>/last_report|updateTime/i.test(s.entity_id));
+    if(upd){
+      html+=`<div class="yp-card"><div class="yp-title">${upd.attributes.friendly_name||'最后上报'}</div>
+        <div class="yp-val" style="font-size:15px">${fmt(upd.state)}</div></div>`;
     }
     switches.concat(buttons).forEach(e=>{
       const isSwitch=e.entity_id.startsWith('switch.');

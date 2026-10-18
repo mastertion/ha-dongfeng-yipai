@@ -143,6 +143,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     except Exception:  # pragma: no cover - panel is best-effort
         _LOGGER.exception("奕派仪表盘面板注册失败（实体不受影响）")
 
+    # register the Xiaomi-style custom cards into Lovelace resources
+    try:
+        from .cards import ensure_cards_resources
+
+        await ensure_cards_resources(hass)
+    except Exception:  # pragma: no cover
+        _LOGGER.debug("奕派卡片资源注册失败", exc_info=True)
+
     return True
 
 

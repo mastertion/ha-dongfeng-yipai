@@ -22,5 +22,8 @@ class DfpRefreshButton(DfpEntity, ButtonEntity):
     _attr_translation_key = "refresh"
     _attr_icon = "mdi:cloud-sync"
 
+    def __init__(self, coord, vin) -> None:
+        super().__init__(coord, vin, "refresh")
+
     async def async_press(self) -> None:
         await self.coordinator.async_request_refresh()
