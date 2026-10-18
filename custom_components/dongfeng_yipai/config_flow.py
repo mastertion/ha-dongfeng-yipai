@@ -6,7 +6,14 @@ from typing import Any
 
 import voluptuous as vol
 
-from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
+from homeassistant.config_entries import ConfigFlow
+
+try:  # ConfigFlowResult only exists on HA >= 2024.7
+    from homeassistant.config_entries import ConfigFlowResult
+except ImportError:  # pragma: no cover - older HA
+    from typing import Any
+
+    ConfigFlowResult = Any
 
 from .const import (
     CONF_APP_ID,
