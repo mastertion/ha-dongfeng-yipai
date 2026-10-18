@@ -6,16 +6,19 @@ web component served by this integration itself; it resolves this entry's
 entities through the entity registry (by config_entry_id, so it works
 regardless of entity-id slug differences across HA versions) and re-renders
 on every state update.
+
+NOTE: panel_custom is a HACS frontend component and is NOT part of core
+Home Assistant.  It must only ever be imported lazily inside a try/except —
+a module-level import would break integration loading on installs without
+that component.
 """
 from __future__ import annotations
 
 import logging
 
 from aiohttp import web
-from homeassistant.components.http import HomeAssistantView
-from homeassistant.components.panel_custom import async_register_panel
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.components.http import HomeAssistantView
 
 from .const import DOMAIN
 
@@ -40,7 +43,6 @@ class YipaiDashboard extends HTMLElement {
       const eid = this._cfg && this._cfg.entry_id;
       this._ids = regs.filter(r=>r.config_entry_id===eid).map(r=>r.entity_id);
     }catch(e){
-      // fallback: anything with yipai in the entity id or vin in attrs
       this._ids = Object.keys(this._hass.states).filter(id=>{
         const a=this._hass.states[id].attributes||{};
         return id.includes('yipai')||id.includes('e_pai')||String(a.friendly_name||'').includes('奕派');
@@ -157,7 +159,10 @@ class YipaiDashboardJSView(HomeAssistantView):
         return web.Response(text=JS, content_type="application/javascript")
 
 
-async def async_setup_panel(hass: HomeAssistant, entry: ConfigEntry) -> None:
+async def async_setup_panel(hass: HomeAssistant, entry) -> None:
+    # Lazy import: panel_custom lives in HACS frontend, never in core HA.
+    from homeassistant.components.panel_custom import async_register_panel
+
     data = hass.data.setdefault(DOMAIN, {})
     if not data.get("_js_view"):
         hass.http.register_view(YipaiDashboardJSView())
@@ -177,7 +182,7 @@ async def async_setup_panel(hass: HomeAssistant, entry: ConfigEntry) -> None:
     )
 
 
-async def async_remove_panel_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+async def async_remove_panel_entry(hass: HomeAssistant, entry) -> None:
     from homeassistant.components.panel_custom import async_remove_panel
 
     vin = entry.data.get("vin", "vehicle")
