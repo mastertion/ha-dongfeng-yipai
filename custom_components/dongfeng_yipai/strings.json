@@ -1,0 +1,61 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Dongfeng eπ vehicle",
+        "description": "Gateway host / VIN / bearer token captured from the official app (com.dfmc.dfpv.sapp).",
+        "data": {
+          "use_demo": "Demo mode (built-in mock data, no capture needed)",
+          "host": "Gateway host",
+          "vin": "VIN",
+          "token": "Bearer token",
+          "app_id": "X-App-Id",
+          "device_id": "X-Device-Id",
+          "scan_interval": "Poll interval (seconds)",
+          "enable_charge_control": "Enable charge start/stop switch"
+        }
+      },
+      "demo": {
+        "title": "eπ demo entry",
+        "description": "Create an entry backed by built-in mock vehicle data.",
+        "data": { "confirm_demo": "Create demo" }
+      }
+    },
+    "error": {
+      "missing_vin": "VIN is required",
+      "missing_token": "Bearer token is required"
+    },
+    "abort": {
+      "already_configured": "This vehicle is already configured"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "battery": { "name": "Battery" },
+      "remaining_range": { "name": "Remaining range" },
+      "total_mileage": { "name": "Total mileage" },
+      "charge_power": { "name": "Charge power" },
+      "charge_remaining_time": { "name": "Charge time left" },
+      "cabin_temperature": { "name": "Cabin temperature" },
+      "outside_temperature": { "name": "Outside temperature" },
+      "speed": { "name": "Speed" },
+      "tyre_pressure_lf": { "name": "Tyre pressure LF" },
+      "tyre_pressure_rf": { "name": "Tyre pressure RF" },
+      "tyre_pressure_lr": { "name": "Tyre pressure LR" },
+      "tyre_pressure_rr": { "name": "Tyre pressure RR" },
+      "last_report": { "name": "Last report" }
+    },
+    "binary_sensor": {
+      "charging": { "name": "Charging" },
+      "online": { "name": "Online" },
+      "locked": { "name": "Locked" },
+      "doors_open": { "name": "Doors open" },
+      "charging_port_open": { "name": "Charging port" },
+      "air_conditioning": { "name": "Air conditioning" },
+      "mirror_folded": { "name": "Mirror folded" }
+    },
+    "switch": { "charge_switch": { "name": "Charge switch" } },
+    "button": { "refresh": { "name": "Refresh status" } },
+    "device_tracker": { "location": { "name": "Location" } }
+  }
+}

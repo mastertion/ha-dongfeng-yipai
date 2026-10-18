@@ -1,0 +1,101 @@
+# 东风奕派车辆状态仪表盘
+# 用法：HA → 设置 → 仪表盘 → 添加新视图 → 手动配置，把下面 cards: 下的内容粘贴进去。
+# 实体 ID 前缀为 yipai_（由 integration 固定），如你的实体 ID 不同请以 开发者工具→实体 为准替换。
+
+title: 奕派车库
+path: /dongfeng-yipai
+icon: mdi:car-electric
+cards:
+  - type: markdown
+    content: "## 🚗 eπ 车辆状态"
+
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      - type: gauge
+        entity: sensor.yipai_powersocstatus
+        name: 动力电池
+        unit: "%"
+        min: 0
+        max: 100
+        severity: { green: 60, yellow: 30, red: 15 }
+
+      - type: entity
+        entity: sensor.yipai_endurancemileage
+        name: 剩余续航
+        icon: mdi:car-electric
+
+      - type: entity
+        entity: sensor.yipai_totalmileage
+        name: 总里程
+
+      - type: entity
+        entity: sensor.yipai_updatetime
+        name: 最后上报
+
+  - type: horizontal-stack
+    cards:
+      - type: glance
+        title: 车门与锁
+        entities:
+          - entity: binary_sensor.yipai_locked
+            name: 门锁
+          - entity: binary_sensor.yipai_doors
+            name: 车门
+          - entity: binary_sensor.yipai_charging_port
+            name: 充电口盖
+          - entity: binary_sensor.yipai_mirror_folded
+            name: 后视镜
+
+      - type: glance
+        title: 空调与在线
+        entities:
+          - entity: binary_sensor.yipai_ac_on
+            name: 空调
+          - entity: sensor.yipai_accabintemperature
+            name: 车内
+          - entity: sensor.yipai_outtemperature
+            name: 车外
+          - entity: binary_sensor.yipai_online
+            name: 车机
+
+  - type: entities
+    title: 充电
+    show_header_toggle: false
+    entities:
+      - entity: switch.yipai_charge_switch
+        name: 充电启停
+      - entity: binary_sensor.yipai_charging
+        name: 充电状态
+      - entity: sensor.yipai_charge_power_kw
+        name: 充电功率
+      - entity: sensor.yipai_batterypackchrgdchrgetimelength
+        name: 剩余充电时长
+
+  - type: grid
+    columns: 4
+    square: true
+    cards:
+      - type: statistic
+        entity: sensor.yipai_tyre_left_front
+        name: 左前
+      - type: statistic
+        entity: sensor.yipai_tyre_right_front
+        name: 右前
+      - type: statistic
+        entity: sensor.yipai_tyre_left_rear
+        name: 左后
+      - type: statistic
+        entity: sensor.yipai_tyre_right_rear
+        name: 右后
+
+  - type: map
+    title: 车辆位置
+    default_zoom: 15
+    entities:
+      - device_tracker.yipai_location
+
+  - type: entity
+    entity: button.yipai_refresh
+    name: 手动刷新

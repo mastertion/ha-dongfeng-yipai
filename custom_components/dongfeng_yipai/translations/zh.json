@@ -1,0 +1,61 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "东风奕派车辆接入",
+        "description": "填写从官方 App 抓包得到的网关地址、VIN 与令牌。",
+        "data": {
+          "use_demo": "演示模式（内置模拟数据，无需抓包）",
+          "host": "网关地址（默认生产环境）",
+          "vin": "车架号 VIN",
+          "token": "访问令牌（Bearer token）",
+          "app_id": "X-App-Id",
+          "device_id": "X-Device-Id",
+          "scan_interval": "轮询间隔（秒）",
+          "enable_charge_control": "启用充电启停开关"
+        }
+      },
+      "demo": {
+        "title": "奕派演示实例",
+        "description": "使用内置模拟车辆数据创建，可离线预览仪表盘效果。",
+        "data": { "confirm_demo": "确认创建演示实例" }
+      }
+    },
+    "error": {
+      "missing_vin": "请填写 VIN",
+      "missing_token": "请填写访问令牌"
+    },
+    "abort": {
+      "already_configured": "该车辆已经配置过了"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "battery": { "name": "动力电池电量" },
+      "remaining_range": { "name": "剩余续航" },
+      "total_mileage": { "name": "总里程" },
+      "charge_power": { "name": "充电功率" },
+      "charge_remaining_time": { "name": "剩余充电时长" },
+      "cabin_temperature": { "name": "车内温度" },
+      "outside_temperature": { "name": "车外温度" },
+      "speed": { "name": "车速" },
+      "tyre_pressure_lf": { "name": "左前胎压" },
+      "tyre_pressure_rf": { "name": "右前胎压" },
+      "tyre_pressure_lr": { "name": "左后胎压" },
+      "tyre_pressure_rr": { "name": "右后胎压" },
+      "last_report": { "name": "最后上报时间" }
+    },
+    "binary_sensor": {
+      "charging": { "name": "充电中" },
+      "online": { "name": "车机在线" },
+      "locked": { "name": "车门上锁", "state": { "on": "已上锁", "off": "已解锁" } },
+      "doors_open": { "name": "车门未关", "state": { "on": "有门未关", "off": "全部关闭" } },
+      "charging_port_open": { "name": "充电口盖", "state": { "on": "已打开", "off": "已关闭" } },
+      "air_conditioning": { "name": "空调", "state": { "on": "运行中", "off": "已关闭" } },
+      "mirror_folded": { "name": "后视镜", "state": { "on": "已折叠", "off": "已展开" } }
+    },
+    "switch": { "charge_switch": { "name": "充电开关" } },
+    "button": { "refresh": { "name": "刷新状态" } },
+    "device_tracker": { "location": { "name": "车辆位置" } }
+  }
+}

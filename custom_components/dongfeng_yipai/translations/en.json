@@ -1,0 +1,53 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Dongfeng eπ vehicle",
+        "data": {
+          "use_demo": "Demo mode (built-in mock data)",
+          "host": "Gateway host",
+          "vin": "VIN",
+          "token": "Bearer token (from app capture)",
+          "app_id": "X-App-Id",
+          "device_id": "X-Device-Id",
+          "scan_interval": "Poll interval (s)",
+          "enable_charge_control": "Enable charge switch"
+        }
+      },
+      "demo": { "title": "eπ demo entry (mock data)" }
+    },
+    "error": {
+      "missing_vin": "VIN is required",
+      "missing_token": "Token is required"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "battery": { "name": "Battery" },
+      "remaining_range": { "name": "Remaining range" },
+      "total_mileage": { "name": "Total mileage" },
+      "charge_power": { "name": "Charge power" },
+      "charge_remaining_time": { "name": "Charge time left" },
+      "cabin_temperature": { "name": "Cabin temperature" },
+      "outside_temperature": { "name": "Outside temperature" },
+      "speed": { "name": "Speed" },
+      "tyre_pressure_lf": { "name": "Tyre LF" },
+      "tyre_pressure_rf": { "name": "Tyre RF" },
+      "tyre_pressure_lr": { "name": "Tyre LR" },
+      "tyre_pressure_rr": { "name": "Tyre RR" },
+      "last_report": { "name": "Last report" }
+    },
+    "binary_sensor": {
+      "charging": { "name": "Charging" },
+      "online": { "name": "Online" },
+      "locked": { "name": "Locked" },
+      "doors_open": { "name": "Doors open" },
+      "charging_port_open": { "name": "Charging port" },
+      "air_conditioning": { "name": "Air conditioning" },
+      "mirror_folded": { "name": "Mirror folded" }
+    },
+    "switch": { "charge_switch": { "name": "Charge switch" } },
+    "button": { "refresh": { "name": "Refresh status" } },
+    "device_tracker": { "location": { "name": "Location" } }
+  }
+}
