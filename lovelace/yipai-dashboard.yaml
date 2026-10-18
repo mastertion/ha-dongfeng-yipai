@@ -1,21 +1,91 @@
-# 奕派车辆状态仪表盘（小米汽车卡片风格）
-# 前提：dongfeng_yipai 集成 v0.4.3+ 已安装，卡片资源已由集成自动注册
-# 用法：HA → 设置 → 仪表盘 → 添加视图 → 手动 YAML，粘贴下面 cards: 之后的内容
+# 奕派车辆状态仪表盘（原生卡片版，已实际部署到你的 HA）
+# 侧边栏应已自动出现"奕派车库"；如需手动添加视图，粘贴下面 cards: 之后的内容即可
+# 实体由集成自动生成，无需填 ID；若实体 ID 不同请以 设置→实体 为准替换
 
 title: 奕派车库
 path: /dongfeng-yipai
 icon: mdi:car-electric
 cards:
-  - type: custom:epi-hero-card
+  - type: gauge
+    entity: sensor.epai_000001_battery
+    name: 动力电池
+    min: 0
+    max: 100
+    segments:
+      green: [60, 100]
+      yellow: [25, 60]
+      red: [0, 25]
+
+  - type: entities
+    name: 行程
+    icon: mdi:car
+    entities:
+      - sensor.epai_000001_remaining_range
+      - sensor.epai_000001_total_mileage
+      - sensor.epai_000001_speed
+      - sensor.epai_000001_last_report
+
+  - type: entities
+    name: 充电
+    icon: mdi:ev-station
+    entities:
+      - switch.epai_000001_charge_switch
+      - binary_sensor.epai_000001_charging
+      - entity: sensor.epai_000001_charge_power
+        name: 功率
+      - entity: sensor.epai_000001_charge_time_left
+        name: 剩余分钟
 
   - type: grid
     columns: 2
-    card: false
     square: false
     cards:
-      - type: custom:epi-charge-card
-      - type: custom:epi-tyres-card
+      - type: glance
+        title: 车门与环境
+        show_state: true
+        entities:
+          - binary_sensor.epai_000001_locked
+          - binary_sensor.epai_000001_doors_open
+          - binary_sensor.epai_000001_charging_port
+          - binary_sensor.epai_000001_air_conditioning
+          - binary_sensor.epai_000001_mirror_folded
+          - binary_sensor.epai_000001_online
+      - type: glance
+        title: 温度
+        show_state: true
+        entities:
+          - sensor.epai_000001_cabin_temperature
+          - sensor.epai_000001_outside_temperature
 
-  - type: custom:epi-actions-card
+  - type: grid
+    columns: 4
+    square: true
+    cards:
+      - type: statistic
+        entity: sensor.epai_000001_tyre_lf
+        name: 左前
+      - type: statistic
+        entity: sensor.epai_000001_tyre_rf
+        name: 右前
+      - type: statistic
+        entity: sensor.epai_000001_tyre_lr
+        name: 左后
+      - type: statistic
+        entity: sensor.epai_000001_tyre_rr
+        name: 右后
 
-  - type: custom:epi-loc-card
+  - type: map
+    title: 车辆位置
+    default_zoom: 15
+    hours_to_show: 0.5
+    entity: device_tracker.epai_000001_location
+
+  - type: entities
+    name: 操作
+    show_header_toggle: false
+    entities:
+      - type: call-service
+        name: 刷新车辆状态
+        service: button.press
+        service_data:
+          entity_id: button.epai_000001_refresh_status
