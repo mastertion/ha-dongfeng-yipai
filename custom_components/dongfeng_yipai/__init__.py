@@ -82,11 +82,26 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     }
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+
+    # auto-register the built-in dashboard panel (no manual Lovelace needed)
+    try:
+        from .panel import async_setup_panel
+
+        await async_setup_panel(hass, entry)
+    except Exception:  # pragma: no cover - panel is best-effort
+        _LOGGER.exception("奕派仪表盘面板注册失败（实体不受影响）")
+
     return True
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unload_ok:
+        try:
+            from .panel import async_remove_panel_entry
+
+            await async_remove_panel_entry(hass, entry)
+        except Exception:  # pragma: no cover
+            _LOGGER.debug("奕派面板移除失败", exc_info=True)
         hass.data[DOMAIN].pop(entry.entry_id, None)
     return unload_ok

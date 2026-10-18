@@ -27,7 +27,7 @@ _LOGGER = logging.getLogger(__name__)
 
 STEP_USER_DATA_SCHEMA = vol.Schema(
     {
-        vol.Optional("use_demo", default=False): bool,
+        vol.Optional("use_demo", default=True): bool,
         vol.Required(CONF_HOST, default=DEFAULT_HOST): str,
         vol.Required(CONF_VIN, default=""): str,
         vol.Optional(CONF_TOKEN, default=""): str,
