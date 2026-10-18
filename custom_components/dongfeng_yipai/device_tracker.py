@@ -3,10 +3,10 @@ from __future__ import annotations
 
 from homeassistant.components.device_tracker import SourceType
 
-try:  # HA 2025.x moved ScannerEntity to the package root
-    from homeassistant.components.device_tracker import ScannerEntity
+try:  # HA 2025.x exposes TrackerEntity at the package root
+    from homeassistant.components.device_tracker import TrackerEntity
 except ImportError:  # pragma: no cover - older HA
-    from homeassistant.components.device_tracker.config_entry import ScannerEntity
+    from homeassistant.components.device_tracker.config_entry import TrackerEntity
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -20,12 +20,13 @@ async def async_setup_entry(
     hass: HomeAssistant, entry, async_add_entities: AddEntitiesCallback
 ) -> None:
     info = hass.data[DOMAIN][entry.entry_id]
-    async_add_entities(
-        [DfpVehicleLocation(info["coordinator"], info["vin"])]
-    )
+    async_add_entities([DfpVehicleLocation(info["coordinator"], info["vin"])])
 
 
-class DfpVehicleLocation(DfpEntity, ScannerEntity):
+class DfpVehicleLocation(DfpEntity, TrackerEntity):
+    """GPS tracker.  Uses TrackerEntity (not ScannerEntity, whose
+    is_connected raises NotImplementedError and crashed entity creation)."""
+
     _attr_translation_key = "location"
     _attr_icon = "mdi:crosshairs-gps"
 

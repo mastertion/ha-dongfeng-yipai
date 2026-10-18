@@ -110,7 +110,7 @@ class YipaiDashboard extends HTMLElement {
           switches=g('switch.'), buttons=g('button.'),
           trackers=g('device_tracker.');
     const fmt=v=>v==null?'--':v;
-    const soc=sensors.find(s=>/powerSocStatus|battery/i.test(s.entity_id));
+    const soc=sensors.find(s=>/powersocstatus|battery/i.test(s.entity_id));
     const rest=sensors.filter(s=>s!==soc&&!/last_report|updateTime/i.test(s.entity_id));
     let html='<div class="yp">';
     // ---- Xiaomi-style hero: battery ring + key numbers + chips ----
@@ -118,10 +118,10 @@ class YipaiDashboard extends HTMLElement {
       const p=Math.max(0,Math.min(100,Number(soc.state)||0));
       const col=p>50?'#00e5b0':p>20?'#ffd166':'#ff6b6b';
       const C=2*Math.PI*54;
-      const range=sensors.find(s=>/endurance/i.test(s.entity_id));
-      const total=sensors.find(s=>/totalmileage/i.test(s.entity_id));
-      const cabin=sensors.find(s=>/acCabin/i.test(s.entity_id));
-      const outt=sensors.find(s=>/outTemperature/i.test(s.entity_id));
+      const range=sensors.find(s=>/endurance|remaining_range/i.test(s.entity_id));
+      const total=sensors.find(s=>/totalmileage|total_mileage/i.test(s.entity_id));
+      const cabin=sensors.find(s=>/accabin|cabin_temperature/i.test(s.entity_id));
+      const outt=sensors.find(s=>/outtemperature|outside_temperature/i.test(s.entity_id));
       html+=`<div class="yp-card yp-hero">
         <div class="ring"><svg width="130" height="130" viewBox="0 0 130 130">
           <circle cx="65" cy="65" r="54" fill="none" stroke="rgba(255,255,255,.10)" stroke-width="10"/>
@@ -144,7 +144,7 @@ class YipaiDashboard extends HTMLElement {
       html+=`<div class="yp-card"><div class="yp-title">${s.attributes.friendly_name||s.entity_id}</div>
         <div class="yp-val">${fmt(s.state)}<span class="yp-unit">${s.attributes.unit_of_measurement||''}</span></div></div>`;
     });
-    const upd=sensors.find(s=>/last_report|updateTime/i.test(s.entity_id));
+    const upd=sensors.find(s=>/last_report|updatetime/i.test(s.entity_id));
     if(upd){
       html+=`<div class="yp-card"><div class="yp-title">${upd.attributes.friendly_name||'最后上报'}</div>
         <div class="yp-val" style="font-size:15px">${fmt(upd.state)}</div></div>`;
