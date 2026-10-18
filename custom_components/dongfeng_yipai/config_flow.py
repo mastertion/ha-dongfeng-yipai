@@ -36,7 +36,7 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
     {
         vol.Optional("use_demo", default=True): bool,
         vol.Required(CONF_HOST, default=DEFAULT_HOST): str,
-        vol.Required(CONF_VIN, default=""): str,
+        vol.Optional(CONF_VIN, default=""): str,
         vol.Optional(CONF_TOKEN, default=""): str,
         vol.Optional(CONF_APP_ID, default=DEFAULT_APP_ID): str,
         vol.Optional(CONF_DEVICE_ID, default="homeassistant"): str,
