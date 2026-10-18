@@ -81,7 +81,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         "enable_ctrl": entry.data.get(CONF_ENABLE_CTRL, True),
     }
 
-    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    try:  # batch API added in HA 2023.9; fall back on older cores
+        await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    except AttributeError:
+        for platform in PLATFORMS:
+            await hass.config_entries.async_forward_entry_setup(entry, platform)
 
     # auto-register the built-in dashboard panel (no manual Lovelace needed)
     try:

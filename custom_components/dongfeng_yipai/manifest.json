@@ -1,4 +1,4 @@
-{
+﻿{
   "domain": "dongfeng_yipai",
   "name": "东风奕派车辆状态",
   "codeowners": [],
@@ -8,5 +8,5 @@
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/mastertion/ha-dongfeng-yipai/issues",
   "requirements": [],
-  "version": "0.3.2"
+  "version": "0.3.3"
 }
