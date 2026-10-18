@@ -1,0 +1,159 @@
+{
+ "views": [
+  {
+   "title": "奕派车库",
+   "path": "dongfeng-yipai",
+   "icon": "mdi:car-electric",
+   "max_columns": 3,
+   "sections": [
+    {
+     "type": "grid",
+     "columns": 1,
+     "cards": [
+      {
+       "type": "gauge",
+       "entity": "sensor.epai_000001_battery",
+       "name": "动力电池",
+       "min": 0,
+       "max": 100,
+       "sections": [
+        {
+         "from": 0,
+         "to": 25,
+         "color": "#db4437"
+        },
+        {
+         "from": 25,
+         "to": 60,
+         "color": "#ffb300"
+        },
+        {
+         "from": 60,
+         "to": 100,
+         "color": "#43a047"
+        }
+       ]
+      },
+      {
+       "type": "vertical-stack",
+       "cards": [
+        {
+         "type": "statistic",
+         "entity": "sensor.epai_000001_remaining_range",
+         "name": "剩余续航"
+        },
+        {
+         "type": "statistic",
+         "entity": "sensor.epai_000001_total_mileage",
+         "name": "总里程"
+        },
+        {
+         "type": "statistic",
+         "entity": "sensor.epai_000001_cabin_temperature",
+         "name": "车内温度"
+        },
+        {
+         "type": "statistic",
+         "entity": "sensor.epai_000001_outside_temperature",
+         "name": "车外温度"
+        },
+        {
+         "type": "statistic",
+         "entity": "sensor.epai_000001_speed",
+         "name": "车速"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "columns": 1,
+     "cards": [
+      {
+       "type": "glance",
+       "title": "车辆状态",
+       "columns": 3,
+       "show_state": true,
+       "entities": [
+        "binary_sensor.epai_000001_online",
+        "binary_sensor.epai_000001_locked",
+        "binary_sensor.epai_000001_doors_open",
+        "binary_sensor.epai_000001_charging",
+        "binary_sensor.epai_000001_air_conditioning",
+        "binary_sensor.epai_000001_charging_port",
+        "binary_sensor.epai_000001_mirror_folded"
+       ]
+      },
+      {
+       "type": "vertical-stack",
+       "cards": [
+        {
+         "type": "entity",
+         "entity": "switch.epai_000001_charge_switch",
+         "name": "充电开关"
+        },
+        {
+         "type": "statistic",
+         "entity": "sensor.epai_000001_charge_power",
+         "name": "充电功率 kW"
+        },
+        {
+         "type": "statistic",
+         "entity": "sensor.epai_000001_charge_time_left",
+         "name": "剩余充电 分钟"
+        }
+       ]
+      },
+      {
+       "type": "glance",
+       "title": "胎压 kPa",
+       "columns": 4,
+       "show_state": true,
+       "entities": [
+        "sensor.epai_000001_tyre_lf",
+        "sensor.epai_000001_tyre_rf",
+        "sensor.epai_000001_tyre_lr",
+        "sensor.epai_000001_tyre_rr"
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "columns": 1,
+     "cards": [
+      {
+       "type": "map",
+       "title": "车辆位置",
+       "default_zoom": 15,
+       "entity": "device_tracker.epai_000001_location"
+      },
+      {
+       "type": "vertical-stack",
+       "cards": [
+        {
+         "type": "button",
+         "name": "刷新车辆状态",
+         "icon": "mdi:cloud-sync",
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "button.press",
+          "target": {
+           "entity_id": "button.epai_000001_refresh_status"
+          }
+         }
+        },
+        {
+         "type": "entity",
+         "entity": "sensor.epai_000001_last_report",
+         "name": "最后上报"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
