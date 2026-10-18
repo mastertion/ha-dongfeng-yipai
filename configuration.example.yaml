@@ -1,0 +1,22 @@
+# ============================================================
+# 东风奕派 Home Assistant 集成 —— configuration.yaml 配置片段
+# 适用版本：v0.4.0+（需先在 HACS 更新到 0.4.0 并重启一次）
+# 用法：复制下面其中一种写法，追加到 HA 配置目录的 configuration.yaml 末尾
+# ============================================================
+
+# ---- 写法 A：演示模式（零凭证，内置模拟车辆数据，预览全部实体与页面） ----
+dongfeng_yipai:
+  use_demo: true
+
+# ---- 写法 B：真实车辆（token 从官方 App 抓包获取，vin 为车架号） ----
+# dongfeng_yipai:
+#   - vin: "你的17位VIN"
+#     token: "eyJhbGciOi....抓包得到的Bearer令牌"
+#     host: https://dfypappgw-pros.dfiov.com.cn   # 生产网关，测试环境改为 dfypappgw-sits.dfiov.com.cn
+#     scan_interval: 60                            # 轮询秒数，15-3600
+#     enable_charge_control: true                  # 是否创建充电启停开关
+
+# 粘贴后：设置 → 系统 → 重启 Home Assistant。
+# 启动时集成会自动创建实例（等价于"添加集成"），无需在界面里搜索东风。
+# 实体前缀 sensor.yipai_ / binary_sensor.yipai_ / switch.yipai_charge_switch 等，
+# 侧边栏自动出现"奕派 xxxxxx"状态页面。
