@@ -1,0 +1,29 @@
+name: Release
+
+# 推送形如 v0.1.0 的 tag 时，自动打包 HACS 所需的 zip 并创建 GitHub Release。
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build HACS package
+        run: |
+          zip -r ha-dongfeng-yipai.zip custom_components lovelace README.md hacs.json
+          unzip -l ha-dongfeng-yipai.zip
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          files: ha-dongfeng-yipai.zip
+          generate_release_notes: true

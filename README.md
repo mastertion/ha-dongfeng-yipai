@@ -24,6 +24,18 @@
 
 ## 安装
 
+### 方式一：HACS 自定义仓库（推荐）
+
+1. HA → 设置 → 套件与服务（Stores）→ HACS → 右上角 ⋮ → **Custom repositories**。
+2. 仓库地址粘贴：`https://github.com/mastertion/ha-dongfeng-yipai`，类别选 **Integration**，添加。
+3. 回到 Integrations 列表找到 **东风奕派车辆状态** → 下载（选最新 Release）。
+4. 重启 Home Assistant，之后按下面「配置」步骤添加实例。
+
+> 本仓库通过 GitHub Actions 在推送 `v*` tag 时自动发布 Release 并附 HACS 安装包，
+> 因此 HACS 能直接读取版本列表，无需手动上传 zip。
+
+### 方式二：手动复制
+
 1. 把 `custom_components/dongfeng_yipai/` 复制到 HA 配置目录的 `custom_components/` 下。
 2. 重启 Home Assistant。
 3. 设置 → 设备与服务 → 添加集成 → 搜索 **“东风奕派”**：
