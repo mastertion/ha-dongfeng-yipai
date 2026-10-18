@@ -4,7 +4,8 @@ from __future__ import annotations
 import logging
 
 import aiohttp
-from homeassistant.config_entries import ConfigEntry
+import voluptuous as vol
+from homeassistant.config_entries import ConfigEntry, SOURCE_IMPORT
 from homeassistant.const import CONF_HOST, Platform
 from homeassistant.core import HomeAssistant
 
@@ -17,6 +18,9 @@ from .const import (
     CONF_SCAN_INTERVAL,
     CONF_TOKEN,
     CONF_VIN,
+    DEFAULT_APP_ID,
+    DEFAULT_HOST,
+    DEFAULT_SCAN_INTERVAL,
     DOMAIN,
 )
 from .coordinator import DfpDataUpdateCoordinator
@@ -31,6 +35,50 @@ PLATFORMS: list[Platform] = [
     Platform.BUTTON,
     Platform.DEVICE_TRACKER,
 ]
+
+# ---- configuration.yaml support -------------------------------------------------
+# dongfeng_yipai:
+#   use_demo: true          # 演示模式（内置模拟数据）
+# 或多车辆列表:
+# dongfeng_yipai:
+#   - vin: "LFV..."
+#     token: "eyJ..."
+#     host: https://dfypappgw-pros.dfiov.com.cn
+_VEHICLE_SCHEMA = vol.Schema(
+    {
+        vol.Optional("use_demo", default=False): bool,
+        vol.Optional(CONF_HOST, default=DEFAULT_HOST): str,
+        vol.Optional(CONF_VIN, default=""): str,
+        vol.Optional(CONF_TOKEN, default=""): str,
+        vol.Optional(CONF_APP_ID, default=DEFAULT_APP_ID): str,
+        vol.Optional(CONF_DEVICE_ID, default="homeassistant"): str,
+        vol.Optional(CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL): vol.All(
+            vol.Coerce(int), vol.Range(min=15, max=3600)
+        ),
+        vol.Optional(CONF_ENABLE_CTRL, default=True): bool,
+    },
+    extra=vol.ALLOW_EXTRA,
+)
+
+CONFIG_SCHEMA = vol.Schema(
+    {DOMAIN: vol.Any(_VEHICLE_SCHEMA, [_VEHICLE_SCHEMA])},
+    extra=vol.ALLOW_EXTRA,
+)
+
+
+async def async_setup(hass: HomeAssistant, config: dict) -> bool:
+    """Create config entries from configuration.yaml via the import flow."""
+    cfg = config.get(DOMAIN)
+    if not cfg:
+        return True
+    vehicles = cfg if isinstance(cfg, list) else [cfg]
+    for vehicle in vehicles:
+        hass.async_create_task(
+            hass.config_entries.flow.async_init(
+                DOMAIN, context={"source": SOURCE_IMPORT}, data=dict(vehicle)
+            )
+        )
+    return True
 
 
 class _MockClient:

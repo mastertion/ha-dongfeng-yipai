@@ -53,6 +53,32 @@ class DfpConfigFlow(ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
 
+    async def async_step_import(
+        self, import_data: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Create an entry from configuration.yaml."""
+        data = dict(import_data or {})
+        if data.get("use_demo"):
+            vin = "MOCKDEMO00000001"
+            data[CONF_VIN] = vin
+            data[CONF_TOKEN] = "mock"
+            data[CONF_MOCK] = True
+            title = "奕派 Demo（模拟数据）"
+        else:
+            vin = data.get(CONF_VIN, "") or "MOCKDEMO00000001"
+            data[CONF_VIN] = vin
+            if not data.get(CONF_TOKEN):
+                # yaml without token => demo, so HA still boots cleanly
+                data[CONF_TOKEN] = "mock"
+                data[CONF_MOCK] = True
+                title = "奕派 Demo（模拟数据）"
+            else:
+                data[CONF_MOCK] = False
+                title = f"奕派 {vin[-6:]}"
+        await self.async_set_unique_id(vin.lower())
+        self._abort_if_unique_id_configured(updates=data)
+        return self.async_create_entry(title=title, data=data)
+
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
