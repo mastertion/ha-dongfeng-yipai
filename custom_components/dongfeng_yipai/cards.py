@@ -49,15 +49,15 @@ function epiSensors(h) {
     range: F(h, [P('^sensor\\.[a-z0-9_]*remaining_range$')]),
     total: F(h, [P('^sensor\\.[a-z0-9_]*total_mileage$')]),
     power: F(h, [P('^sensor\\.[a-z0-9_]*charge_power$')]),
-    time:  F(h, [P('^sensor\\.[a-z0-9_]*charge_remaining_time$')]),
+    time:  F(h, [P('^sensor\\.[a-z0-9_]*(charge_remaining_time|charge_time_left)$')]),
     cabin: F(h, [P('^sensor\\.[a-z0-9_]*cabin_temperature$')]),
     out:   F(h, [P('^sensor\\.[a-z0-9_]*outside_temperature$')]),
     speed: F(h, [P('^sensor\\.[a-z0-9_]*speed$')]),
     upd:   F(h, [P('^sensor\\.[a-z0-9_]*last_report$')]),
-    tlf: F(h, [P('^sensor\\.[a-z0-9_]*tyre_pressure_lf$')]),
-    trf: F(h, [P('^sensor\\.[a-z0-9_]*tyre_pressure_rf$')]),
-    tlr: F(h, [P('^sensor\\.[a-z0-9_]*tyre_pressure_lr$')]),
-    trr: F(h, [P('^sensor\\.[a-z0-9_]*tyre_pressure_rr$')]),
+    tlf: F(h, [P('^sensor\\.[a-z0-9_]*tyre(_pressure)?_lf$')]),
+    trf: F(h, [P('^sensor\\.[a-z0-9_]*tyre(_pressure)?_rf$')]),
+    tlr: F(h, [P('^sensor\\.[a-z0-9_]*tyre(_pressure)?_lr$')]),
+    trr: F(h, [P('^sensor\\.[a-z0-9_]*tyre(_pressure)?_rr$')]),
   };
 }
 function epiOthers(h) {
@@ -70,7 +70,7 @@ function epiOthers(h) {
     ac:       F(h, [P('^binary_sensor\\.[a-z0-9_]*air_conditioning$')]),
     mirror:   F(h, [P('^binary_sensor\\.[a-z0-9_]*mirror_folded$')]),
     sw:       F(h, [P('^switch\\.[a-z0-9_]*charge_switch$')]),
-    btn:      F(h, [P('^button\\.[a-z0-9_]*refresh$')]),
+    btn:      F(h, [P('^button\\.[a-z0-9_]*refresh(_status)?$')]),
     dt:       F(h, [P('^device_tracker\\.[a-z0-9_]*location$')]),
   };
 }
@@ -322,9 +322,26 @@ class EpiCardsJSView(HomeAssistantView):
         )
 
 
+def _get_resource_collection(hass: HomeAssistant):
+    """Return the mutable (storage-mode) resource collection across HA gens.
+
+    HA <=2024: hass.data["lovelace_resources"] is the collection.
+    HA >=2025: it moved to hass.data["lovelace"].resources (LovelaceConfig).
+    YAML-mode collections are read-only -> treated as unavailable.
+    """
+    holder = hass.data.get("lovelace_resources")
+    if holder is not None and hasattr(holder, "async_create_item"):
+        return holder
+    ll = hass.data.get("lovelace")
+    res = getattr(ll, "resources", None) if ll is not None else None
+    if res is not None and hasattr(res, "async_create_item"):
+        return res
+    return None
+
+
 async def _try_register_resource(hass: HomeAssistant) -> bool:
     """Add cards.js to Lovelace custom resources (idempotent)."""
-    collection = hass.data.get("lovelace_resources")
+    collection = _get_resource_collection(hass)
     if collection is None:
         return False
     items = await collection.async_get_items()
