@@ -19,12 +19,16 @@ from homeassistant.components.sensor import (
 )
 from homeassistant.const import (
     PERCENTAGE,
-    UnitOfElectricPower,
     UnitOfLength,
     UnitOfSpeed,
     UnitOfTemperature,
     UnitOfTime,
 )
+
+try:  # HA 2024.4+ 将电功率单位枚举更名为 UnitOfPower
+    from homeassistant.const import UnitOfPower as _UnitOfPower
+except ImportError:  # 兼容更旧版本
+    from homeassistant.const import UnitOfElectricPower as _UnitOfPower
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
@@ -86,7 +90,7 @@ DESCRIPTIONS: tuple[DfpSensorDescription, ...] = (
         key="charge_power_kw",
         translation_key="charge_power",
         lookup=_kw,
-        native_unit_of_measurement=UnitOfElectricPower.KILO_WATT,
+        native_unit_of_measurement=_UnitOfPower.KILO_WATT,
         device_class=SensorDeviceClass.POWER,
         state_class=SensorStateClass.MEASUREMENT,
         icon="mdi:flash",
